@@ -9,7 +9,7 @@ documentation = "https://docs.rs/tch-serde/"
 repository = "https://github.com/jerry73204/tch-serde"
 homepage = "https://github.com/jerry73204/tch-serde.git"
 readme = "README.md"
-license-file = "MIT"
+license = "MIT"
 
 [dependencies]
 tch = "0.1"
