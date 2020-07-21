@@ -1,6 +1,6 @@
 [package]
 name = "tch-serde"
-version = "0.1.1"
+version = "0.1.2"
 authors = ["jerry73204 <jerry73204@gmail.com>"]
 edition = "2018"
 description = "Serialize/Deserialize tch-rs types with serde"
@@ -26,3 +26,4 @@ doc-only = ["tch/doc-only"]
 
 [package.metadata.docs.rs]
 features = ["doc-only"]
+no-default-features = true
