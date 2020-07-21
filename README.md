@@ -10,7 +10,7 @@ Add this line to your `Cargo.toml` to work with this crate.
 tch-serde = "0.1"
 ```
 
-Annotate `#[serde(with = "tch_serde::serde_tensor")]` attributes to enable serialization on that field.
+For example, annotate `#[serde(with = "tch_serde::serde_tensor")]` attributes to enable serialization on tensor field.
 
 ```rust
 use tch::{Device, Kind, Tensor};
