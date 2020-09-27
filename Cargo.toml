@@ -12,7 +12,7 @@ readme = "README.md"
 license = "MIT"
 
 [dependencies]
-tch = "0.1"
+tch = "0.2"
 serde = { version = "1.0", features = ["derive"] }
 half = { version = "1.6", features = ["serde"] }
 
