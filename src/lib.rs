@@ -165,7 +165,6 @@ pub mod serde_tensor {
 
         Ok(tensor)
     }
-
 }
 
 /// Serializing/Deserializing functions for [Device].
@@ -208,7 +207,6 @@ pub mod serde_device {
 
         Ok(device)
     }
-
 }
 
 /// Serializing/Deserializing functions for [Kind].
@@ -434,5 +432,4 @@ mod tests {
 
         Ok(())
     }
-
 }
