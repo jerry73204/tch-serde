@@ -342,6 +342,10 @@ mod tests {
             r#""complex_double""#
         );
         assert_eq!(serde_json::to_string(&Example(Kind::Bool))?, r#""bool""#);
+        assert_eq!(serde_json::to_string(&Example(Kind::QInt8))?, r#""qint8""#);
+        assert_eq!(serde_json::to_string(&Example(Kind::QUInt8))?, r#""quint8""#);
+        assert_eq!(serde_json::to_string(&Example(Kind::QInt32))?, r#""qint32""#);
+        assert_eq!(serde_json::to_string(&Example(Kind::BFloat16))?, r#""bfloat16""#);
 
         // deserialize
         assert_eq!(
@@ -399,6 +403,22 @@ mod tests {
         assert_eq!(
             serde_json::from_str::<Example>(r#""bool""#)?,
             Example(Kind::Bool)
+        );
+        assert_eq!(
+            serde_json::from_str::<Example>(r#""qint8""#)?,
+            Example(Kind::QInt8)
+        );
+        assert_eq!(
+            serde_json::from_str::<Example>(r#""quint8""#)?,
+            Example(Kind::QUInt8)
+        );
+        assert_eq!(
+            serde_json::from_str::<Example>(r#""qint32""#)?,
+            Example(Kind::QInt32)
+        );
+        assert_eq!(
+            serde_json::from_str::<Example>(r#""bfloat16""#)?,
+            Example(Kind::BFloat16)
         );
 
         Ok(())
