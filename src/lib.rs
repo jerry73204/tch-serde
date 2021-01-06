@@ -123,6 +123,10 @@ pub mod serde_tensor {
                 Kind::Float => mem::size_of::<f32>(),
                 Kind::Double => mem::size_of::<f64>(),
                 Kind::Bool => mem::size_of::<bool>(),
+                Kind::QInt8 => mem::size_of::<i8>(),
+                Kind::QUInt8 => mem::size_of::<u8>(),
+                Kind::QInt32 => mem::size_of::<i32>(),
+                Kind::BFloat16 => mem::size_of::<f16>(),
                 _ => {
                     return Err(S::Error::custom(format!(
                         "tensor with kind {:?} is not supported yet",
