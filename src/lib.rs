@@ -231,6 +231,10 @@ pub mod serde_kind {
             ComplexFloat => "complex_float",
             ComplexDouble => "complex_double",
             Bool => "bool",
+            QInt8 => "qint8",
+            QUInt8 => "quint8",
+            QInt32 => "qint32",
+            BFloat16 => "bfloat16",
         };
         text.serialize(serializer)
     }
@@ -254,6 +258,10 @@ pub mod serde_kind {
             "complex_float" => ComplexFloat,
             "complex_double" => ComplexDouble,
             "bool" => Bool,
+            "qint8" => QInt8,
+            "quint8" => QUInt8,
+            "qint32" => QInt32,
+            "bfloat16" => BFloat16,
             _ => return Err(D::Error::custom(format!(r#"invalid kind "{}""#, text))),
         };
         Ok(kind)
