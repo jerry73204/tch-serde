@@ -1,6 +1,6 @@
 [package]
 name = "tch-serde"
-version = "0.3.0"
+version = "0.3.1"
 authors = ["jerry73204 <jerry73204@gmail.com>"]
 edition = "2018"
 description = "Serialize/Deserialize tch-rs types with serde"
@@ -12,7 +12,7 @@ readme = "README.md"
 license = "MIT"
 
 [dependencies]
-tch = "0.3"
+tch = "0.3.1"
 serde = { version = "1.0", features = ["derive"] }
 half = { version = "1.6", features = ["serde"] }
 
