@@ -123,6 +123,10 @@ pub mod serde_tensor {
                 Kind::Float => mem::size_of::<f32>(),
                 Kind::Double => mem::size_of::<f64>(),
                 Kind::Bool => mem::size_of::<bool>(),
+                Kind::QInt8 => mem::size_of::<i8>(),
+                Kind::QUInt8 => mem::size_of::<u8>(),
+                Kind::QInt32 => mem::size_of::<i32>(),
+                Kind::BFloat16 => mem::size_of::<f16>(),
                 _ => {
                     return Err(S::Error::custom(format!(
                         "tensor with kind {:?} is not supported yet",
@@ -231,6 +235,10 @@ pub mod serde_kind {
             ComplexFloat => "complex_float",
             ComplexDouble => "complex_double",
             Bool => "bool",
+            QInt8 => "qint8",
+            QUInt8 => "quint8",
+            QInt32 => "qint32",
+            BFloat16 => "bfloat16",
         };
         text.serialize(serializer)
     }
@@ -254,6 +262,10 @@ pub mod serde_kind {
             "complex_float" => ComplexFloat,
             "complex_double" => ComplexDouble,
             "bool" => Bool,
+            "qint8" => QInt8,
+            "quint8" => QUInt8,
+            "qint32" => QInt32,
+            "bfloat16" => BFloat16,
             _ => return Err(D::Error::custom(format!(r#"invalid kind "{}""#, text))),
         };
         Ok(kind)
@@ -330,6 +342,10 @@ mod tests {
             r#""complex_double""#
         );
         assert_eq!(serde_json::to_string(&Example(Kind::Bool))?, r#""bool""#);
+        assert_eq!(serde_json::to_string(&Example(Kind::QInt8))?, r#""qint8""#);
+        assert_eq!(serde_json::to_string(&Example(Kind::QUInt8))?, r#""quint8""#);
+        assert_eq!(serde_json::to_string(&Example(Kind::QInt32))?, r#""qint32""#);
+        assert_eq!(serde_json::to_string(&Example(Kind::BFloat16))?, r#""bfloat16""#);
 
         // deserialize
         assert_eq!(
@@ -387,6 +403,22 @@ mod tests {
         assert_eq!(
             serde_json::from_str::<Example>(r#""bool""#)?,
             Example(Kind::Bool)
+        );
+        assert_eq!(
+            serde_json::from_str::<Example>(r#""qint8""#)?,
+            Example(Kind::QInt8)
+        );
+        assert_eq!(
+            serde_json::from_str::<Example>(r#""quint8""#)?,
+            Example(Kind::QUInt8)
+        );
+        assert_eq!(
+            serde_json::from_str::<Example>(r#""qint32""#)?,
+            Example(Kind::QInt32)
+        );
+        assert_eq!(
+            serde_json::from_str::<Example>(r#""bfloat16""#)?,
+            Example(Kind::BFloat16)
         );
 
         Ok(())
