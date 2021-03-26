@@ -4,12 +4,6 @@ This crate provides {ser,de}ialization methods for tch-rs common types.
 
 ## Usage
 
-Add this line to your `Cargo.toml` to work with this crate.
-
-```toml
-tch-serde = "0.3"
-```
-
 For example, annotate `#[serde(with = "tch_serde::serde_tensor")]` attributes to enable serialization on tensor field.
 
 ```rust
