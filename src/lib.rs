@@ -5,8 +5,9 @@
 //! attributes on fields to enable serialization.
 //!
 //! The snipplet serializes a compound type of [Tensor], [Kind] and [Device].
+//!
 //! ``` rust
-//! use tch::{Tensor, Device, Kind};
+//! use tch::{Tensor, Device, Kind, Reduction};
 //!
 //! #[derive(Debug, serde::Serialize, serde::Deserialize)]
 //! struct Example {
@@ -16,21 +17,21 @@
 //!     kind: Kind,
 //!         #[serde(with = "tch_serde::serde_device")]
 //!     device: Device,
+//!         #[serde(with = "tch_serde::serde_reduction")]
+//!     reduction: Reduction,
 //! }
 //!
-//! fn main() {
-//!     let example = Example {
-//!         tensor: Tensor::randn(
-//!             &[2, 3],
-//!             (Kind::Float, Device::cuda_if_available()),
-//!         ),
-//!         kind: Kind::Float,
-//!         device: Device::Cpu
-//!     };
-//!     let text = serde_json::to_string_pretty(&example).unwrap();
-//!     println!("{}", text);
-//!
-//! }
+//! let example = Example {
+//!     tensor: Tensor::randn(
+//!         &[2, 3],
+//!         (Kind::Float, Device::Cuda(0)),
+//!     ),
+//!     kind: Kind::Float,
+//!     device: Device::Cpu,
+//!     reduction: Reduction::Mean,
+//! };
+//! let text = serde_json::to_string_pretty(&example).unwrap();
+//! println!("{}", text);
 //! ```
 //!
 //! For example, it produces the following JSON text.
@@ -72,7 +73,8 @@
 //!     ]
 //!   },
 //!   "kind": "float",
-//!   "device": "cpu"
+//!   "device": "cpu",
+//!   "reduction": Reduction::Mean,
 //! }
 //! ```
 
