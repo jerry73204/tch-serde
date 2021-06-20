@@ -38,7 +38,7 @@
 //! {
 //!   "tensor": {
 //!     "requires_grad": false,
-//!     "device": "cuda(0)",
+//!     "device": "cuda:0",
 //!     "shape": [
 //!       2,
 //!       3
@@ -181,7 +181,7 @@ pub mod serde_device {
     {
         let text = match device {
             Device::Cpu => "cpu".into(),
-            Device::Cuda(n) => format!("cuda({})", n),
+            Device::Cuda(n) => format!("cuda:{}", n),
         };
         serializer.serialize_str(&text)
     }
@@ -193,19 +193,15 @@ pub mod serde_device {
         let text = String::deserialize(deserializer)?;
         let device = match text.as_str() {
             "cpu" => Device::Cpu,
-            _ => {
-                let prefix = "cuda(";
-                let suffix = ")";
-                if text.starts_with(prefix) && text.ends_with(suffix) {
-                    let number: usize = text[(prefix.len())..(text.len() - suffix.len())]
-                        .parse()
-                        .map_err(|_err| {
-                        D::Error::custom(format!("invalid device name {}", text))
-                    })?;
-                    Device::Cuda(number)
-                } else {
-                    return Err(D::Error::custom(""));
-                }
+            other => {
+                let index = (move || -> Option<_> {
+                    let remaining = other.strip_prefix("cuda:")?;
+                    let index: usize = remaining.parse().ok()?;
+                    Some(index)
+                })()
+                .ok_or_else(|| D::Error::custom(format!("invalid device name {}", text)))?;
+
+                Device::Cuda(index)
             }
         };
 
@@ -366,11 +362,11 @@ mod tests {
         assert_eq!(serde_json::to_string(&Example(Device::Cpu))?, r#""cpu""#);
         assert_eq!(
             serde_json::to_string(&Example(Device::Cuda(0)))?,
-            r#""cuda(0)""#
+            r#""cuda:0""#
         );
         assert_eq!(
             serde_json::to_string(&Example(Device::Cuda(1)))?,
-            r#""cuda(1)""#
+            r#""cuda:1""#
         );
 
         // deserialize
@@ -379,11 +375,11 @@ mod tests {
             Example(Device::Cpu)
         );
         assert_eq!(
-            serde_json::from_str::<Example>(r#""cuda(0)""#)?,
+            serde_json::from_str::<Example>(r#""cuda:0""#)?,
             Example(Device::Cuda(0))
         );
         assert_eq!(
-            serde_json::from_str::<Example>(r#""cuda(1)""#)?,
+            serde_json::from_str::<Example>(r#""cuda:1""#)?,
             Example(Device::Cuda(1))
         );
 
@@ -423,9 +419,18 @@ mod tests {
         );
         assert_eq!(serde_json::to_string(&Example(Kind::Bool))?, r#""bool""#);
         assert_eq!(serde_json::to_string(&Example(Kind::QInt8))?, r#""qint8""#);
-        assert_eq!(serde_json::to_string(&Example(Kind::QUInt8))?, r#""quint8""#);
-        assert_eq!(serde_json::to_string(&Example(Kind::QInt32))?, r#""qint32""#);
-        assert_eq!(serde_json::to_string(&Example(Kind::BFloat16))?, r#""bfloat16""#);
+        assert_eq!(
+            serde_json::to_string(&Example(Kind::QUInt8))?,
+            r#""quint8""#
+        );
+        assert_eq!(
+            serde_json::to_string(&Example(Kind::QInt32))?,
+            r#""qint32""#
+        );
+        assert_eq!(
+            serde_json::to_string(&Example(Kind::BFloat16))?,
+            r#""bfloat16""#
+        );
 
         // deserialize
         assert_eq!(
