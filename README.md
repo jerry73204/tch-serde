@@ -2,6 +2,8 @@
 
 This crate provides {ser,de}ialization methods for tch-rs common types.
 
+[docs.rs](https://docs.rs/tch-serde/) | [crates.io](https://crates.io/crates/tch-serde)
+
 ## Usage
 
 For example, annotate `#[serde(with = "tch_serde::serde_tensor")]` attributes to enable serialization on tensor field.
