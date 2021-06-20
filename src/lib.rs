@@ -81,8 +81,8 @@ use serde::{
     de::Error as DeserializeError, ser::Error as SerializeError, Deserialize, Deserializer,
     Serialize, Serializer,
 };
-use std::mem;
-use tch::{Device, Kind, Tensor};
+use std::{borrow::Cow, mem};
+use tch::{Device, Kind, Reduction, Tensor};
 
 /// The serialized representation of [Tensor].
 ///
@@ -272,10 +272,90 @@ pub mod serde_kind {
     }
 }
 
+/// Serializing/Deserializing functions for [Reduction].
+pub mod serde_reduction {
+    use super::*;
+
+    pub fn serialize<S>(reduction: &Reduction, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: Serializer,
+    {
+        let text: Cow<'_, str> = match reduction {
+            Reduction::None => "none".into(),
+            Reduction::Mean => "mean".into(),
+            Reduction::Sum => "sum".into(),
+            Reduction::Other(value) => format!("other:{}", value).into(),
+        };
+        text.serialize(serializer)
+    }
+
+    pub fn deserialize<'de, D>(deserializer: D) -> Result<Reduction, D::Error>
+    where
+        D: Deserializer<'de>,
+    {
+        let text = String::deserialize(deserializer)?;
+
+        let reduction = match &*text {
+            "none" => Reduction::None,
+            "mean" => Reduction::Mean,
+            "sum" => Reduction::Sum,
+            other => {
+                let value = (move || -> Option<i64> {
+                    let remaining = other.strip_prefix("other:")?;
+                    let value: i64 = remaining.parse().ok()?;
+                    Some(value)
+                })()
+                .ok_or_else(|| D::Error::custom(format!("invalid reduction '{}'", other)))?;
+                Reduction::Other(value)
+            }
+        };
+
+        Ok(reduction)
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
     use anyhow::Result;
+
+    #[test]
+    fn serde_reduction_test() -> Result<()> {
+        #[derive(Debug, Serialize, Deserialize, PartialEq, Eq)]
+        struct Example(#[serde(with = "serde_reduction")] Reduction);
+
+        assert_eq!(
+            serde_json::from_str::<Example>(r#""none""#)?.0,
+            Reduction::None
+        );
+        assert_eq!(
+            serde_json::from_str::<Example>(r#""mean""#)?.0,
+            Reduction::Mean
+        );
+        assert_eq!(
+            serde_json::from_str::<Example>(r#""sum""#)?.0,
+            Reduction::Sum
+        );
+        assert_eq!(
+            serde_json::from_str::<Example>(r#""other:3""#)?.0,
+            Reduction::Other(3)
+        );
+        assert_eq!(
+            serde_json::to_string(&Example(Reduction::None))?,
+            r#""none""#
+        );
+        assert_eq!(
+            serde_json::to_string(&Example(Reduction::Mean))?,
+            r#""mean""#
+        );
+        assert_eq!(serde_json::to_string(&Example(Reduction::Sum))?, r#""sum""#);
+        assert_eq!(
+            serde_json::to_string(&Example(Reduction::Other(1)))?,
+            r#""other:1""#
+        );
+
+        Ok(())
+    }
 
     #[test]
     fn serde_device_test() -> Result<()> {
