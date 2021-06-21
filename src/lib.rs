@@ -74,7 +74,7 @@
 //!   },
 //!   "kind": "float",
 //!   "device": "cpu",
-//!   "reduction": Reduction::Mean,
+//!   "reduction": "mean",
 //! }
 //! ```
 

@@ -25,7 +25,7 @@ struct Example {
 
 fn main() {
     let example = Example {
-        tensor: Tensor::randn(&[2, 3], (Kind::Float, Device::cuda_if_available())),
+        tensor: Tensor::randn(&[2, 3], (Kind::Float, Device::Cuda(0))),
         kind: Kind::Float,
         device: Device::Cpu,
         reduction: Reduction::Mean,
